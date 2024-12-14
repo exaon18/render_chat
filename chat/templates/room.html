@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>welcome to chat {{room}}</title>
+</head>
+<body>
+    <p class="room">{{room}}</p>
+    <textarea class="area" cols="100" rows="30"></textarea>
+
+        <input name="text" placeholder="message..." class="textd">
+        <button class="send" type="submit">send</button>
+    
+</body>
+<script>
+    const room=document.querySelector(".room").innerHTML;
+    const socket=new WebSocket(
+        'ws://'+
+        window.location.host
+        +"/ws/"
+        +room+'/'
+    );
+/*************  ✨ Codeium Command ⭐  *************/
+    //This event is triggered when socket receives a message from the server.
+    //e.data will contain the message sent from the server.
+
+    socket.onmessage = function(e){
+        let data = JSON.parse(e.data);
+        let message=data.msg;
+        document.querySelector(".area").value+=(message+"\n");
+        
+    };
+    document.querySelector(".send").onclick= function(e){
+        const text=document.querySelector(".textd").value;
+        socket.send(JSON.stringify({
+            "msg":text
+        }));
+        
+    };
+    socket.onerror=function(e){
+        conole.log(e)
+    }
+
+</script>
+</html>

@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>welcome to chat </title>
+</head>
+<body>
+    <strong> welcome to chat please enter a room name below</strong>
+    <form action="{% url 'index' %}" method="post">
+        {%csrf_token%}
+        <input type="text" name="room_name" placeholder="room name">
+        <button type="submit">join</button>
+    </form>
+</body>
+</html>
