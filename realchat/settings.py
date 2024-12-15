@@ -44,7 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 ]
 CORS_ALLOWED_ORIGINS =[
-     "https://render-chat-3.onrender.com"
+     "*"
  ]
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
