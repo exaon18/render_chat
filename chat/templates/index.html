@@ -3,14 +3,568 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>welcome to chat </title>
+    <title>ChatHub - Connect & Chat</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #667eea;
+            --secondary-color: #764ba2;
+            --accent-color: #f093fb;
+            --success-color: #4facfe;
+            --bg-dark: #0f0f23;
+            --bg-card: #1a1a2e;
+            --text-light: #ffffff;
+            --text-gray: #a0a0a0;
+            --border-color: rgba(255, 255, 255, 0.1);
+            --gradient: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            --gradient-accent: linear-gradient(135deg, var(--accent-color), var(--success-color));
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-light);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Animated Background */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.2) 0%, transparent 50%);
+            z-index: -1;
+            animation: backgroundShift 10s ease-in-out infinite alternate;
+        }
+
+        @keyframes backgroundShift {
+            0% { transform: scale(1) rotate(0deg); }
+            100% { transform: scale(1.1) rotate(5deg); }
+        }
+
+        /* Floating Particles */
+        .particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: var(--accent-color);
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { 
+                transform: translateY(0px) rotate(0deg); 
+                opacity: 0.7; 
+            }
+            50% { 
+                transform: translateY(-20px) rotate(180deg); 
+                opacity: 1; 
+            }
+        }
+
+        /* Main Container */
+        .chat-container {
+            background: rgba(26, 26, 46, 0.9);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 3rem;
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+            box-shadow: 
+                0 20px 40px rgba(0, 0, 0, 0.3),
+                0 0 0 1px rgba(255, 255, 255, 0.05);
+            position: relative;
+            animation: slideUp 0.8s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Logo/Icon */
+        .chat-icon {
+            width: 80px;
+            height: 80px;
+            background: var(--gradient);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 2rem;
+            font-size: 2rem;
+            color: var(--text-light);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { 
+                transform: scale(1); 
+                box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4); 
+            }
+            50% { 
+                transform: scale(1.05); 
+                box-shadow: 0 15px 40px rgba(102, 126, 234, 0.6); 
+            }
+        }
+
+        /* Title */
+        .welcome-title {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: fadeIn 1s ease-out 0.3s both;
+        }
+
+        .welcome-subtitle {
+            font-size: 1.1rem;
+            color: var(--text-gray);
+            margin-bottom: 2.5rem;
+            line-height: 1.6;
+            animation: fadeIn 1s ease-out 0.5s both;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Form Styling */
+        .chat-form {
+            animation: fadeIn 1s ease-out 0.7s both;
+        }
+
+        .input-group {
+            position: relative;
+            margin-bottom: 2rem;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-gray);
+            font-size: 1.1rem;
+            z-index: 2;
+        }
+
+        .room-input {
+            width: 100%;
+            padding: 1.2rem 1rem 1.2rem 3rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid var(--border-color);
+            border-radius: 16px;
+            color: var(--text-light);
+            font-size: 1rem;
+            font-family: inherit;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .room-input::placeholder {
+            color: var(--text-gray);
+            opacity: 0.8;
+        }
+
+        .room-input:focus {
+            border-color: var(--primary-color);
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 
+                0 0 0 4px rgba(102, 126, 234, 0.1),
+                0 8px 25px rgba(102, 126, 234, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .room-input:focus + .input-icon {
+            color: var(--primary-color);
+        }
+
+        /* Join Button */
+        .join-btn {
+            width: 100%;
+            padding: 1.2rem 2rem;
+            background: var(--gradient);
+            color: var(--text-light);
+            border: none;
+            border-radius: 16px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .join-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .join-btn:hover::before {
+            left: 100%;
+        }
+
+        .join-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.4);
+        }
+
+        .join-btn:active {
+            transform: translateY(-1px);
+        }
+
+        /* Features List */
+        .features {
+            margin-top: 2.5rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border-color);
+            animation: fadeIn 1s ease-out 0.9s both;
+        }
+
+        .features-title {
+            font-size: 0.9rem;
+            color: var(--text-gray);
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .features-list {
+            display: flex;
+            justify-content: space-around;
+            gap: 1rem;
+        }
+
+        .feature-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-gray);
+            font-size: 0.85rem;
+        }
+
+        .feature-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-color);
+            font-size: 1rem;
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            color: var(--text-gray);
+            margin-top: 1rem;
+        }
+
+        .loading.active {
+            display: flex;
+        }
+
+        .loading-spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--border-color);
+            border-top-color: var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 480px) {
+            .chat-container {
+                margin: 1rem;
+                padding: 2rem 1.5rem;
+            }
+
+            .welcome-title {
+                font-size: 1.8rem;
+            }
+
+            .welcome-subtitle {
+                font-size: 1rem;
+            }
+
+            .features-list {
+                flex-direction: column;
+                gap: 1.5rem;
+            }
+
+            .feature-item {
+                flex-direction: row;
+                justify-content: flex-start;
+                text-align: left;
+            }
+        }
+
+        /* Hover Effects */
+        .chat-container:hover {
+            transform: translateY(-5px);
+            box-shadow: 
+                0 25px 50px rgba(0, 0, 0, 0.4),
+                0 0 0 1px rgba(255, 255, 255, 0.1);
+        }
+
+        /* Focus Trap for Accessibility */
+        .chat-container:focus-within {
+            outline: 2px solid var(--primary-color);
+            outline-offset: 4px;
+        }
+    </style>
 </head>
 <body>
-    <strong> welcome to chat please enter a room name below</strong>
-    <form action="{% url 'index' %}" method="post">
-        {%csrf_token%}
-        <input type="text" name="room_name" placeholder="room name">
-        <button type="submit">join</button>
-    </form>
+    <!-- Floating Particles -->
+    <div class="particles" id="particles"></div>
+
+    <!-- Main Chat Container -->
+    <div class="chat-container">
+        <!-- Chat Icon -->
+        <div class="chat-icon">
+            <i class="fas fa-comments"></i>
+        </div>
+
+        <!-- Welcome Content -->
+        <h1 class="welcome-title">Welcome to ChatHub</h1>
+        <p class="welcome-subtitle">Connect with friends and start meaningful conversations in real-time</p>
+
+        <!-- Chat Form -->
+        <form class="chat-form" action="{% url 'index' %}" method="post" id="chatForm">
+            {% csrf_token %}
+            <div class="input-group">
+                <input 
+                    type="text" 
+                    name="room_name" 
+                    class="room-input"
+                    placeholder="Enter room name (e.g., general, gaming, study)"
+                    required
+                    autocomplete="off"
+                    id="roomInput"
+                >
+                <i class="fas fa-door-open input-icon"></i>
+            </div>
+            
+            <button type="submit" class="join-btn" id="joinBtn">
+                <i class="fas fa-sign-in-alt"></i>
+                Join Room
+            </button>
+        </form>
+
+        <!-- Loading State -->
+        <div class="loading" id="loading">
+            <div class="loading-spinner"></div>
+            <span>Joining room...</span>
+        </div>
+
+        <!-- Features Section -->
+        <div class="features">
+            <p class="features-title">Why Choose ChatHub?</p>
+            <div class="features-list">
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <span>Real-time</span>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <span>Secure</span>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <span>Social</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Create floating particles
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            const particleCount = 30;
+
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 6 + 's';
+                particle.style.animationDuration = (Math.random() * 4 + 4) + 's';
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        // Form submission with loading state
+        function handleFormSubmission() {
+            const form = document.getElementById('chatForm');
+            const joinBtn = document.getElementById('joinBtn');
+            const loading = document.getElementById('loading');
+            const roomInput = document.getElementById('roomInput');
+
+            form.addEventListener('submit', function(e) {
+                const roomName = roomInput.value.trim();
+                
+                if (!roomName) {
+                    e.preventDefault();
+                    roomInput.focus();
+                    roomInput.style.borderColor = '#ff6b6b';
+                    setTimeout(() => {
+                        roomInput.style.borderColor = '';
+                    }, 2000);
+                    return;
+                }
+
+                // Show loading state
+                joinBtn.style.display = 'none';
+                loading.classList.add('active');
+            });
+        }
+
+        // Input validation and formatting
+        function setupInputValidation() {
+            const roomInput = document.getElementById('roomInput');
+            
+            roomInput.addEventListener('input', function(e) {
+                // Remove special characters and convert to lowercase
+                let value = e.target.value.toLowerCase().replace(/[^a-z0-9-_]/g, '');
+                e.target.value = value;
+                
+                // Reset border color on input
+                e.target.style.borderColor = '';
+            });
+
+            // Add enter key support
+            roomInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    document.getElementById('joinBtn').click();
+                }
+            });
+        }
+
+        // Add interactive hover effects
+        function addInteractiveEffects() {
+            const container = document.querySelector('.chat-container');
+            
+            // Mouse move effect for subtle tilt
+            container.addEventListener('mousemove', function(e) {
+                const rect = container.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                
+                const rotateX = (y - centerY) / 20;
+                const rotateY = (centerX - x) / 20;
+                
+                container.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-5px)`;
+            });
+            
+            container.addEventListener('mouseleave', function() {
+                container.style.transform = '';
+            });
+        }
+
+        // Auto-focus on room input
+        function autoFocus() {
+            setTimeout(() => {
+                document.getElementById('roomInput').focus();
+            }, 500);
+        }
+
+        // Initialize everything
+        document.addEventListener('DOMContentLoaded', function() {
+            createParticles();
+            handleFormSubmission();
+            setupInputValidation();
+            addInteractiveEffects();
+            autoFocus();
+        });
+
+        // Add some random room suggestions
+        const roomSuggestions = [
+            'general', 'gaming', 'study', 'music', 'tech', 'random', 
+            'movies', 'sports', 'coding', 'art', 'books', 'travel'
+        ];
+
+        function showRandomSuggestion() {
+            const roomInput = document.getElementById('roomInput');
+            const randomRoom = roomSuggestions[Math.floor(Math.random() * roomSuggestions.length)];
+            
+            if (!roomInput.value) {
+                roomInput.placeholder = `Try "${randomRoom}" or create your own`;
+            }
+        }
+
+        // Change placeholder suggestion every 3 seconds
+        setInterval(showRandomSuggestion, 3000);
+    </script>
 </body>
 </html>
