@@ -120,6 +120,7 @@ CORS_ALLOW_CREDENTIALS = True
 CSRF_TRUSTED_ORIGINS = [
     'https://render-chat-3.onrender.com',
     'http://localhost:3000',
+    '*'
 ]
 
 # Default primary key field type
